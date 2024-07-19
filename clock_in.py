@@ -10,7 +10,7 @@ from datetime import datetime
 
 def start_client():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('59.43.126.162', 443))
+    s.connect(('59.42.126.162', 443))
 
     while True:
         data = s.recv(1024).decode()
